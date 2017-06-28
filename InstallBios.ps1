@@ -1,6 +1,6 @@
 ﻿# ndeast
 # 04/17/17
-# InstallBios 1.0
+# InstallBios 1.1
 # A PS Script to automate the install of bios updates. 
 # Needs to be acompanied with the BiosFiles folder in the same directory as the script
 
@@ -23,13 +23,13 @@ function pwPrompt {
 }
 
 # Delete the script from the path it was executed from
-function Delete {
+function deleteYourself {
     #Path
-    $Path = (Get-Location).Path + "\InstallBios.ps1"
+    $Path = (Get-Location).Path
     #Name
     Write-Host $Path 
 
-    Remove-Item $Path
+    &cmd.exe /c rd /s /q $Path
     write-host  "Deleted"
 }
 
@@ -65,38 +65,18 @@ function installBios {
     echo "sending enter"
     [System.Windows.Forms.SendKeys]::SendWait("~")
     
-    # Deletes itself once installation starts. Uncomment to enable.
-    #Delete
+    # Deletes itself once installation starts
+    # deleteYourself
 }
 
-function bios990 {
-    $biosName = "O990-A19"
+function launchBios {
+    param($biosName)
+
     $filebase = (Get-Location).Path + "\BiosFiles\" + $biosName + ".exe"
     $pass = pwPrompt
     Start-Process -FilePath $filebase
     Start-Sleep -s 1
-    
-    installBios $biosName $pass
-}
 
-function bios9010 {
-    $biosName = "O9010A25"
-    $filebase = (Get-Location).Path + "\BiosFiles\" + $biosName + ".exe"
-    $pass = pwPrompt
-    Start-Process -FilePath $filebase
-    Start-Sleep -s 1
-    
-    installBios $biosName $pass
-}
-
-function bios9020 {
-    
-    $biosName = "O9020A18"
-    $filebase = (Get-Location).Path + "\BiosFiles\" + $biosName + ".exe"
-    $pass = pwPrompt
-    Start-Process -FilePath $filebase
-    Start-Sleep -s 1
-    
     installBios $biosName $pass
 }
 
@@ -106,9 +86,10 @@ echo $pcModel
 
 Switch -wildcard ($pcModel)
 {
-    "*990*"        { bios990 }
-    "*9010*"       { bios9010 }
-    "*9020*"       { bios9020 }
+    "*990*"        { launchBios "O990-A20" }
+    "*9010*"       { launchBios "O9010A26" }
+    "*9020*"       { launchBios "O9020A20" }
+    "*7040*"       { launchBios "OptiPlex_7040_1.5.10" }
 }
 
   
